@@ -1,27 +1,20 @@
 package de.dkb.api.codeChallenge.notification.model
 
-import jakarta.persistence.AttributeConverter
-import jakarta.persistence.Converter
+import jakarta.persistence.*
+import java.util.UUID;
 
-@Suppress("EnumEntryName")
-enum class NotificationType {
-    type1,
-    type2,
-    type3,
-    type4,
-    type5,
-}
+@Entity
+@Table(name = "notification_type")
+data class NotificationType(
 
-@Converter
-class NotificationTypeSetConverter : AttributeConverter<MutableSet<NotificationType>, String> {
+    @Id
+    @Column(columnDefinition = "uuid")
+    var id: UUID? = null,
 
-    override fun convertToDatabaseColumn(valueSet: MutableSet<NotificationType>?): String =
-        valueSet.orEmpty()
-            .joinToString(separator = ";") { it.name }
+    @Column(nullable = false, unique = true)
+    var type: String? = null,
 
-    override fun convertToEntityAttribute(databaseString: String?): MutableSet<NotificationType> =
-        databaseString.orEmpty()
-            .split(";")
-            .map { NotificationType.valueOf(it) }
-            .toMutableSet()
-}
+    @ManyToOne
+    @JoinColumn(name = "category_id", nullable = false)
+    var category: Category? = null
+)
