@@ -1,0 +1,54 @@
+databaseChangeLog:
+  - changeSet:
+      id: "0006-insert-categories-and-types"
+      author: "sattar"
+      changes:
+        - insert:
+            tableName: category
+            columns:
+              - column: { name: name, value: "Category A" }
+        - insert:
+            tableName: category
+            columns:
+              - column: { name: name, value: "Category B" }
+        - insert:
+            tableName: notification_type
+            columns:
+              - column: { name: type, value: "type1" }
+              - column: { name: category_id, valueComputed: "(SELECT id FROM category WHERE name='Category A')" }
+        - insert:
+            tableName: notification_type
+            columns:
+              - column: { name: type, value: "type2" }
+              - column: { name: category_id, valueComputed: "(SELECT id FROM category WHERE name='Category A')" }
+        - insert:
+            tableName: notification_type
+            columns:
+              - column: { name: type, value: "type3" }
+              - column: { name: category_id, valueComputed: "(SELECT id FROM category WHERE name='Category A')" }
+        - insert:
+            tableName: notification_type
+            columns:
+              - column: { name: type, value: "type4" }
+              - column: { name: category_id, valueComputed: "(SELECT id FROM category WHERE name='Category B')" }
+        - insert:
+            tableName: notification_type
+            columns:
+              - column: { name: type, value: "type5" }
+              - column: { name: category_id, valueComputed: "(SELECT id FROM category WHERE name='Category B')" }
+
+  - changeSet:
+      id: 0004-migrate-users
+      author: migration
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO user_category(user_id, category_id)
+              SELECT DISTINCT u.id, nt.category_id
+              FROM users u
+              JOIN unnest(string_to_array(u.notifications, ';')) AS old_type ON true
+              JOIN notification_type nt ON nt.type = old_type;
+
+      rollback:
+        - sql:
+            sql: "DELETE FROM user_category;"

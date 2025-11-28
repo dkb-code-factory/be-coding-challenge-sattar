@@ -1,0 +1,33 @@
+databaseChangeLog:
+    - changeSet:
+          id: "0004-create-notification-type-table"
+          author: "sattar"
+          changes:
+              - createTable:
+                    tableName: notification_type
+                    columns:
+                        - column:
+                              name: id
+                              type: uuid
+                              defaultValueComputed: "uuid_generate_v4()"
+                              constraints:
+                                  primaryKey: true
+                                  nullable: false
+                        - column:
+                              name: type
+                              type: varchar(50)
+                              constraints:
+                                  nullable: false
+                                  unique: true
+                        - column:
+                              name: category_id
+                              type: uuid
+                              constraints:
+                                  nullable: false
+
+              - addForeignKeyConstraint:
+                    baseTableName: notification_type
+                    baseColumnNames: category_id
+                    referencedTableName: category
+                    referencedColumnNames: id
+                    constraintName: fk_notification_type_category

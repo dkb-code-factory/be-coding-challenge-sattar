@@ -1,0 +1,30 @@
+databaseChangeLog:
+  - changeSet:
+      id: "0005-create-user-category-table"
+      author: "sattar"
+      changes:
+        - createTable:
+            tableName: user_category
+            columns:
+              - column:
+                  name: user_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: category_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+
+        - addPrimaryKey:
+            tableName: user_category
+            columnNames: user_id, category_id
+            constraintName: pk_user_category
+
+        - addForeignKeyConstraint:
+            baseTableName: user_category
+            baseColumnNames: category_id
+            referencedTableName: category
+            referencedColumnNames: id
+            constraintName: fk_user_category_category
